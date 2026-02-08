@@ -1,0 +1,11 @@
+node_modules
+.dist
+.dist/
+dist
+.vite
+.DS_Store
+.git
+.gitignore
+npm-debug.log
+pnpm-debug.log
+yarn-error.log

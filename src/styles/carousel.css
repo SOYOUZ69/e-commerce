@@ -1,0 +1,29 @@
+/* Product Carousel Styles */
+.product-carousel .slick-slide {
+  transition: all 0.3s ease;
+}
+
+.product-carousel .slick-list {
+  margin: 0 -12px;
+}
+
+.product-carousel .slick-track {
+  display: flex !important;
+}
+
+.product-carousel .slick-slide {
+  height: inherit !important;
+}
+
+.product-carousel .slick-slide > div {
+  height: 100%;
+}
+
+/* Override default slick styles */
+.slick-dots li button:before {
+  color: #B8936A;
+}
+
+.slick-dots li.slick-active button:before {
+  color: #B8936A;
+}
