@@ -184,8 +184,12 @@ const slugify = (value) =>
     .replace(/(^-|-$)/g, '');
 
 async function main() {
-  const adminEmail = process.env.ADMIN_EMAIL || 'admin@reflet.com';
-  const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
+  const adminEmail = process.env.ADMIN_EMAIL;
+  const adminPassword = process.env.ADMIN_PASSWORD;
+
+  if (!adminEmail || !adminPassword) {
+    throw new Error('ADMIN_EMAIL and ADMIN_PASSWORD are required for seeding.');
+  }
 
   const passwordHash = await bcrypt.hash(adminPassword, 10);
   await prisma.adminUser.upsert({

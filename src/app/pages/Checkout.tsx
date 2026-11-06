@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import L from 'leaflet';
 import { MapContainer, Marker, TileLayer, useMapEvents } from 'react-leaflet';
@@ -7,6 +7,7 @@ import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 import { customerCheckout } from '../api/auth';
+import { trackInitiateCheckout, trackPurchase } from '../lib/metaPixel';
 import { useAuth } from '../store/auth';
 import { useCart } from '../store/cart';
 import { formatPrice } from '../utils/format';
@@ -60,11 +61,12 @@ const MapPicker = ({
 
 export const Checkout = () => {
   const navigate = useNavigate();
-  const { customer, loading, refresh } = useAuth();
+  const { customer, refresh } = useAuth();
   const { items, subtotal, clear } = useCart();
   const [form, setForm] = useState({
     firstName: '',
     lastName: '',
+    email: '',
     phone: '',
     address: '',
     notes: '',
@@ -76,12 +78,7 @@ export const Checkout = () => {
   const [showMap, setShowMap] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-
-  useEffect(() => {
-    if (!loading && !customer) {
-      navigate('/account/login?returnTo=/checkout');
-    }
-  }, [customer, loading, navigate]);
+  const initiateCheckoutTrackedRef = useRef(false);
 
   useEffect(() => {
     if (customer) {
@@ -89,6 +86,7 @@ export const Checkout = () => {
         ...prev,
         firstName: prev.firstName || customer.firstName,
         lastName: prev.lastName || customer.lastName,
+        email: prev.email || customer.email || '',
         phone: prev.phone || customer.phone || '',
         address: prev.address || customer.address || '',
       }));
@@ -124,11 +122,25 @@ export const Checkout = () => {
   }, [query]);
 
   const cartItems = useMemo(
-    () => items.map((item) => ({ productId: item.product.id, quantity: item.quantity })),
+    () =>
+      items.map((item) => ({
+        productId: item.product.id,
+        quantity: item.quantity,
+        optionLabel: item.optionLabel ?? null,
+        optionValue: item.optionValue ?? null,
+      })),
     [items]
   );
 
   const total = subtotal;
+
+  useEffect(() => {
+    if (initiateCheckoutTrackedRef.current || items.length === 0) {
+      return;
+    }
+    trackInitiateCheckout(items, total);
+    initiateCheckoutTrackedRef.current = true;
+  }, [items, total]);
 
   const fetchReverseGeocode = async (lat: number, lon: number) => {
     try {
@@ -149,10 +161,6 @@ export const Checkout = () => {
     }
   };
 
-  if (!customer && !loading) {
-    return null;
-  }
-
   return (
     <section className="py-16 bg-[#FAF8F3]">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -166,19 +174,32 @@ export const Checkout = () => {
                 setSubmitting(true);
                 setError(null);
                 try {
+                  const purchaseItems = items.map((item) => ({
+                    id: item.product.id,
+                    quantity: item.quantity,
+                    price: item.product.price,
+                  }));
                   const order = await customerCheckout({
                     items: cartItems,
                     address: form.address,
+                    email: form.email,
                     phone: form.phone,
                     notes: form.notes || undefined,
                     firstName: form.firstName,
                     lastName: form.lastName,
                   });
-                  await refresh();
+                  trackPurchase({
+                    orderId: order.id,
+                    items: purchaseItems,
+                    total: Number(order.total || total),
+                  });
+                  if (customer) {
+                    await refresh();
+                  }
                   clear();
                   navigate(`/order-confirmed?orderId=${encodeURIComponent(order.id)}`);
                 } catch (err) {
-                  setError(err instanceof Error ? err.message : 'Checkout failed');
+                  setError(err instanceof Error ? err.message : 'Commande impossible.');
                 } finally {
                   setSubmitting(false);
                 }
@@ -201,6 +222,14 @@ export const Checkout = () => {
                   required
                 />
               </div>
+              <input
+                type="email"
+                value={form.email}
+                onChange={(event) => setForm((prev) => ({ ...prev, email: event.target.value }))}
+                placeholder="Email"
+                className="border border-[#B8936A] px-3 py-2 w-full"
+                required
+              />
               <input
                 value={form.phone}
                 onChange={(event) => setForm((prev) => ({ ...prev, phone: event.target.value }))}
@@ -294,7 +323,7 @@ export const Checkout = () => {
             <h2 className="text-xl text-[#2C2520] mb-4">Résumé</h2>
             <div className="space-y-3">
               {items.map((item) => (
-                <div key={item.product.id} className="flex items-center gap-3">
+                <div key={item.key} className="flex items-center gap-3">
                   <img
                     src={item.product.image}
                     alt={item.product.name}
@@ -302,6 +331,11 @@ export const Checkout = () => {
                   />
                   <div className="flex-1">
                     <p className="text-[#2C2520]">{item.product.name}</p>
+                    {item.optionValue && (
+                      <p className="text-xs text-[#6B5D52]">
+                        {(item.optionLabel ?? 'Option')}: {item.optionValue}
+                      </p>
+                    )}
                     <p className="text-xs text-[#6B5D52]">
                       {item.quantity} × {formatPrice(item.product.price)}
                     </p>

@@ -25,7 +25,7 @@ const authFetch = async (path: string, options?: RequestInit) => {
   });
 
   if (!response.ok) {
-    let message = 'Request failed';
+    let message = 'La requête a échoué';
     try {
       const data = await response.json();
       if (data?.error) {
@@ -68,6 +68,7 @@ export const customerMe = () => authFetch('/api/auth/me');
 export const customerCheckout = (payload: {
   items: Array<{ productId: string; quantity: number }>;
   address: string;
+  email?: string;
   phone?: string;
   notes?: string;
   firstName?: string;

@@ -9,20 +9,20 @@ export function Features() {
 
   const defaults = [
     {
-      title: "Free Shipping",
-      description: "On orders over $100"
+      title: "Livraison offerte",
+      description: "Dès 100 € d'achat"
     },
     {
-      title: "Secure Payment",
-      description: "100% secure transactions"
+      title: "Paiement sécurisé",
+      description: "Transactions 100 % sécurisées"
     },
     {
-      title: "Easy Returns",
-      description: "30-day return policy"
+      title: "Retours simplifiés",
+      description: "30 jours pour changer d'avis"
     },
     {
-      title: "24/7 Support",
-      description: "Dedicated customer service"
+      title: "Service attentionné",
+      description: "Conseillers dédiés, 7j/7"
     }
   ];
 

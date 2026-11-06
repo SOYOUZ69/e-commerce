@@ -13,6 +13,10 @@ export const AdminProductEdit = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [imageList, setImageList] = useState<string[]>([]);
+  const [optionEnabled, setOptionEnabled] = useState(false);
+  const [optionLabel, setOptionLabel] = useState('');
+  const [optionValues, setOptionValues] = useState<string[]>([]);
 
   useEffect(() => {
     const load = async () => {
@@ -26,6 +30,17 @@ export const AdminProductEdit = () => {
         ]);
         const found = products.find((item: Product) => item.id === id) ?? null;
         setProduct(found);
+        if (found) {
+          const urls = (found.images ?? []).map((img) => img.url).filter(Boolean);
+          if (found.image && !urls.includes(found.image)) {
+            urls.unshift(found.image);
+          }
+          setImageList(urls);
+          const values = Array.isArray(found.optionValues) ? found.optionValues : [];
+          setOptionValues(values);
+          setOptionLabel(found.optionLabel ?? '');
+          setOptionEnabled(values.length > 0);
+        }
         setCategories(categoriesData);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load product');
@@ -69,7 +84,10 @@ export const AdminProductEdit = () => {
             originalPrice: product.originalPrice ?? null,
             stock: product.stock ?? 0,
             status: product.status ?? 'active',
-            image: product.image,
+            image: imageList[0] ?? product.image,
+            images: imageList,
+            optionLabel: optionEnabled ? optionLabel : null,
+            optionValues: optionEnabled ? optionValues : [],
             badge: product.badge ?? null,
             rating: product.rating ?? null,
             shortDescription: product.shortDescription ?? null,
@@ -145,15 +163,24 @@ export const AdminProductEdit = () => {
           <input
             type="file"
             accept="image/*"
+            multiple
             onChange={async (event) => {
-              const file = event.target.files?.[0];
-              if (!file) {
+              const files = Array.from(event.target.files ?? []);
+              if (!files.length) {
                 return;
               }
               try {
                 setUploading(true);
-                const data = await adminUpload(file);
-                setProduct({ ...product, image: data.url });
+                for (const file of files) {
+                  const data = await adminUpload(file);
+                  setImageList((prev) => {
+                    const next = [...prev, data.url];
+                    if (!product.image) {
+                      setProduct({ ...product, image: next[0] });
+                    }
+                    return next;
+                  });
+                }
               } catch (err) {
                 setError(err instanceof Error ? err.message : 'Upload failed');
               } finally {
@@ -162,8 +189,44 @@ export const AdminProductEdit = () => {
             }}
             className="border border-[#B8936A] px-3 py-2 w-full"
           />
-          {product.image && (
-            <img src={product.image} alt="Produit" className="h-24 rounded" />
+          {imageList.length > 0 && (
+            <div className="grid grid-cols-3 gap-2">
+              {imageList.map((url, index) => (
+                <div key={url} className="relative group">
+                  <img src={url} alt="Produit" className="h-24 w-full object-contain rounded bg-[#FAF8F3]" />
+                  <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-black/60 text-xs text-white px-2 py-1">
+                    <span>{index === 0 ? 'Principale' : 'Secondaire'}</span>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setImageList((prev) => {
+                          const next = prev.filter((item) => item !== url);
+                          setProduct({ ...product, image: next[0] ?? '' });
+                          return next;
+                        })
+                      }
+                    >
+                      Retirer
+                    </button>
+                  </div>
+                  {index !== 0 && (
+                    <button
+                      type="button"
+                      className="absolute top-2 right-2 bg-white/90 text-xs px-2 py-1 rounded"
+                      onClick={() =>
+                        setImageList((prev) => {
+                          const next = prev.filter((item) => item !== url);
+                          setProduct({ ...product, image: url });
+                          return [url, ...next];
+                        })
+                      }
+                    >
+                      Principale
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
           )}
           {uploading && <p className="text-sm text-[#6B5D52]">Upload en cours...</p>}
         </div>
@@ -199,6 +262,66 @@ export const AdminProductEdit = () => {
           placeholder="Description"
           required
         />
+        <div className="space-y-3 md:col-span-2">
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={optionEnabled}
+              onChange={(event) => {
+                const enabled = event.target.checked;
+                setOptionEnabled(enabled);
+                if (!enabled) {
+                  setOptionLabel('');
+                  setOptionValues([]);
+                }
+              }}
+            />
+            Activer les options (couleur, taille, pièces...)
+          </label>
+          {optionEnabled && (
+            <div className="space-y-2">
+              <input
+                value={optionLabel}
+                onChange={(event) => setOptionLabel(event.target.value)}
+                className="border border-[#B8936A] px-3 py-2 w-full"
+                placeholder="Nom de l'option (ex: Couleur)"
+                required
+              />
+              {optionValues.map((value, index) => (
+                <div key={index} className="flex items-center gap-2">
+                  <input
+                    value={value}
+                    onChange={(event) =>
+                      setOptionValues((prev) => {
+                        const next = [...prev];
+                        next[index] = event.target.value;
+                        return next;
+                      })
+                    }
+                    className="flex-1 border border-[#B8936A] px-3 py-2"
+                    placeholder={`Option ${index + 1}`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setOptionValues((prev) => prev.filter((_, i) => i !== index))
+                    }
+                    className="text-sm text-red-600"
+                  >
+                    Retirer
+                  </button>
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={() => setOptionValues((prev) => [...prev, ''])}
+                className="text-sm text-[#B8936A]"
+              >
+                + Ajouter une option
+              </button>
+            </div>
+          )}
+        </div>
         <textarea
           value={(product.details ?? []).join('\n')}
           onChange={(event) =>

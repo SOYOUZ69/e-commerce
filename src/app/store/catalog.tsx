@@ -12,11 +12,26 @@ const CatalogContext = createContext<{
   fetchProductBySlug: (slug: string) => Promise<Product | undefined>;
 } | null>(null);
 
-const mapProduct = (product: Product) => ({
-  ...product,
-  slug: typeof product.slug === 'string' ? product.slug.trim() : product.slug,
-  details: Array.isArray(product.details) ? product.details : [],
-});
+const mapProduct = (product: Product) => {
+  const images = Array.isArray(product.images) ? product.images : [];
+  const primaryImage =
+    product.image ||
+    images.find((item) => item.isPrimary)?.url ||
+    images[0]?.url ||
+    '';
+  const optionValues = Array.isArray(product.optionValues)
+    ? product.optionValues.filter((value) => typeof value === 'string' && value.trim())
+    : [];
+  return {
+    ...product,
+    slug: typeof product.slug === 'string' ? product.slug.trim() : product.slug,
+    details: Array.isArray(product.details) ? product.details : [],
+    image: primaryImage,
+    images,
+    optionLabel: product.optionLabel ?? null,
+    optionValues,
+  };
+};
 
 export const CatalogProvider = ({ children }: { children: React.ReactNode }) => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -24,8 +39,10 @@ export const CatalogProvider = ({ children }: { children: React.ReactNode }) => 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const refresh = async () => {
-    setLoading(true);
+  // `silent` : rafraichissement en arriere-plan, sans repasser par l'etat de
+  // chargement — sinon la page clignoterait a chaque retour sur l'onglet.
+  const refresh = async (silent = false) => {
+    if (!silent) setLoading(true);
     setError(null);
     try {
       const [productsData, categoriesData] = await Promise.all([
@@ -35,14 +52,31 @@ export const CatalogProvider = ({ children }: { children: React.ReactNode }) => 
       setProducts(productsData.map(mapProduct));
       setCategories(categoriesData);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load catalog');
+      setError(err instanceof Error ? err.message : 'Impossible de charger le catalogue.');
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   };
 
   useEffect(() => {
     refresh();
+
+    // Le catalogue etait charge une seule fois au demarrage : un onglet laisse
+    // ouvert ne voyait jamais les produits ajoutes depuis l'admin, y compris
+    // dans la recherche du header qui lit cette meme liste. On le rafraichit
+    // donc quand l'onglet redevient visible ou reprend le focus.
+    const refreshIfVisible = () => {
+      if (document.visibilityState === 'visible') {
+        void refresh(true);
+      }
+    };
+
+    document.addEventListener('visibilitychange', refreshIfVisible);
+    window.addEventListener('focus', refreshIfVisible);
+    return () => {
+      document.removeEventListener('visibilitychange', refreshIfVisible);
+      window.removeEventListener('focus', refreshIfVisible);
+    };
   }, []);
 
   const getProductBySlug = (slug: string) =>

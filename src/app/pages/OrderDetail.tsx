@@ -10,6 +10,8 @@ type OrderItem = {
   name: string;
   price: number;
   quantity: number;
+  optionLabel?: string | null;
+  optionValue?: string | null;
   product?: { image?: string | null };
 };
 
@@ -46,7 +48,7 @@ export const OrderDetail = () => {
         const data = await customerOrderById(id);
         setOrder(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load order');
+        setError(err instanceof Error ? err.message : 'Impossible de charger la commande.');
       } finally {
         setIsLoading(false);
       }
@@ -110,6 +112,11 @@ export const OrderDetail = () => {
                     )}
                     <div className="flex-1">
                       <p className="text-[#2C2520]">{item.name}</p>
+                      {item.optionValue && (
+                        <p className="text-xs text-[#6B5D52]">
+                          {(item.optionLabel ?? 'Option')}: {item.optionValue}
+                        </p>
+                      )}
                       <p className="text-xs text-[#6B5D52]">
                         {item.quantity} × {formatPrice(item.price)}
                       </p>

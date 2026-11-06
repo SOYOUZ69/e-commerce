@@ -58,7 +58,7 @@ export const AdminHomeCategoryEdit = () => {
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl text-[#2C2520]">Modifier categorie mise en avant</h2>
+        <h2 className="text-2xl text-[#2C2520]">Modifier section "Explorez par univers"</h2>
         <Link to="/admin/home" className="text-[#B8936A]">Retour</Link>
       </div>
       {error && <p className="text-red-600 mb-3">{error}</p>}

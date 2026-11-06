@@ -44,9 +44,9 @@ export function CategorySection() {
     <section className="py-16 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-4xl text-[#2C2520] mb-4">Shop by Category</h2>
+          <h2 className="text-4xl text-[#2C2520] mb-4">Explorez par univers</h2>
           <p className="text-[#6B5D52] max-w-2xl mx-auto">
-            Browse our carefully curated categories to find exactly what you're looking for
+            Parcourez nos catégories soigneusement sélectionnées et trouvez la pièce qui vous ressemble.
           </p>
         </div>
 
@@ -61,7 +61,7 @@ export function CategorySection() {
                 <div className="aspect-[3/4] overflow-hidden">
                   <img
                     src={item.category?.image ?? ''}
-                    alt={item.category?.name ?? 'Category'}
+                    alt={item.category?.name ?? 'Catégorie'}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
                 </div>

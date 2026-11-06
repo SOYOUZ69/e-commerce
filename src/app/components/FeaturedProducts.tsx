@@ -22,7 +22,7 @@ export function FeaturedProducts() {
           : [];
         setFeaturedItems(mapped);
       } catch (err) {
-        setHomeError(err instanceof Error ? err.message : 'Failed to load featured products');
+        setHomeError(err instanceof Error ? err.message : 'Impossible de charger la sélection.');
       } finally {
         setHomeLoading(false);
       }
@@ -41,14 +41,14 @@ export function FeaturedProducts() {
     <section className="py-16 bg-[#FAF8F3]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-4xl text-[#2C2520] mb-4">Featured Products</h2>
+          <h2 className="text-4xl text-[#2C2520] mb-4">Sélection exclusive</h2>
           <p className="text-[#6B5D52] max-w-2xl mx-auto">
-            Discover our hand-picked selection of premium products
+            Découvrez notre sélection de pièces d’exception, choisies avec soin.
           </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {isLoading && <p className="text-[#6B5D52]">Loading products...</p>}
+          {isLoading && <p className="text-[#6B5D52]">Chargement des produits...</p>}
           {!isLoading && featured.length === 0 && (
             <p className="text-[#6B5D52]">
               Aucun produit mis en avant pour le moment.
@@ -63,7 +63,7 @@ export function FeaturedProducts() {
             to="/products"
             className="border-2 border-[#B8936A] text-[#B8936A] px-8 py-3 hover:bg-[#B8936A] hover:text-white transition-colors inline-block"
           >
-            View All Products
+            Voir toute la collection
           </Link>
           {homeError && featuredItems.length === 0 && (
             <p className="text-xs text-[#6B5D52] mt-3">({homeError})</p>

@@ -4,8 +4,8 @@ import { adminLogin, setAdminToken } from '../api/admin';
 
 export const AdminLogin = () => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('admin@reflet.com');
-  const [password, setPassword] = useState('admin123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 

@@ -99,7 +99,7 @@ export const AdminHome = () => {
       {error && <p className="text-red-600">{error}</p>}
       {loading && <p className="text-[#6B5D52]">Chargement des donnees...</p>}
 
-      <SectionCard title="Hero">
+      <SectionCard title="Bannière principale">
         <div className="overflow-auto">
           <table className="w-full text-left text-sm">
             <thead className="text-[#6B5D52]">
@@ -128,7 +128,7 @@ export const AdminHome = () => {
         </div>
       </SectionCard>
 
-      <SectionCard title="Features">
+      <SectionCard title="Engagements & services">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <form
             onSubmit={async (event) => {
@@ -209,7 +209,7 @@ export const AdminHome = () => {
         </div>
       </SectionCard>
 
-      <SectionCard title="Promo Banners">
+      <SectionCard title="Collections & promotions">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <form
             onSubmit={async (event) => {
@@ -340,7 +340,7 @@ export const AdminHome = () => {
         </div>
       </SectionCard>
 
-      <SectionCard title="Categories mises en avant">
+      <SectionCard title="Explorez par univers">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <form
             onSubmit={async (event) => {
@@ -425,7 +425,7 @@ export const AdminHome = () => {
         </div>
       </SectionCard>
 
-      <SectionCard title="Produits mis en avant">
+      <SectionCard title="Sélection exclusive & Tendances du moment">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <form
             onSubmit={async (event) => {
@@ -461,8 +461,8 @@ export const AdminHome = () => {
               }
               className="w-full border border-[#B8936A] px-3 py-2"
             >
-              <option value="featured">Featured</option>
-              <option value="trending">Trending</option>
+              <option value="featured">Sélection exclusive</option>
+              <option value="trending">Tendances du moment</option>
             </select>
             <input
               type="number"
@@ -481,7 +481,7 @@ export const AdminHome = () => {
               <thead className="text-[#6B5D52]">
                 <tr>
                   <th className="py-2">Produit</th>
-                  <th className="py-2">Type</th>
+                  <th className="py-2">Section</th>
                   <th className="py-2 text-right">Actions</th>
                 </tr>
               </thead>
@@ -489,7 +489,9 @@ export const AdminHome = () => {
                 {homeProducts.map((item) => (
                   <tr key={item.id} className="border-t border-[#EEE2D2]">
                     <td className="py-2 text-[#2C2520]">{item.product?.name ?? item.productId}</td>
-                    <td className="py-2 text-[#6B5D52]">{item.type}</td>
+                    <td className="py-2 text-[#6B5D52]">
+                      {item.type === 'featured' ? 'Sélection exclusive' : 'Tendances du moment'}
+                    </td>
                     <td className="py-2 text-right">
                       <Link
                         to={`/admin/home/home-products/${item.id}`}

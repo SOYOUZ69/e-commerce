@@ -42,7 +42,7 @@ export const AccountRegister = () => {
                 });
                 navigate(returnTo);
               } catch (err) {
-                setError(err instanceof Error ? err.message : 'Register failed');
+                setError(err instanceof Error ? err.message : 'Création de compte impossible.');
               } finally {
                 setLoading(false);
               }
@@ -67,7 +67,7 @@ export const AccountRegister = () => {
               type="email"
               value={form.email}
               onChange={(event) => setForm((prev) => ({ ...prev, email: event.target.value }))}
-              placeholder="Email"
+              placeholder="Adresse e-mail"
               className="w-full border border-[#B8936A] px-3 py-2"
               required
             />

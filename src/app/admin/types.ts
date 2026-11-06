@@ -17,6 +17,15 @@ export type Product = {
   stock?: number | null;
   status?: string | null;
   image: string;
+  images?: {
+    id?: string;
+    url: string;
+    alt?: string | null;
+    isPrimary?: boolean;
+    position?: number;
+  }[];
+  optionLabel?: string | null;
+  optionValues?: string[];
   badge?: string | null;
   rating?: number | null;
   shortDescription?: string | null;

@@ -27,7 +27,7 @@ export function ProductCarousel() {
           : [];
         setTrendingItems(mapped);
       } catch (err) {
-        setHomeError(err instanceof Error ? err.message : 'Failed to load trending products');
+        setHomeError(err instanceof Error ? err.message : 'Impossible de charger les tendances.');
       } finally {
         setHomeLoading(false);
       }
@@ -77,8 +77,8 @@ export function ProductCarousel() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between mb-12">
           <div>
-            <h2 className="text-4xl text-[#2C2520] mb-2">Trending Now</h2>
-            <p className="text-[#6B5D52]">Most popular items this season</p>
+            <h2 className="text-4xl text-[#2C2520] mb-2">Tendances du moment</h2>
+            <p className="text-[#6B5D52]">Les pièces les plus désirées de la saison</p>
           </div>
           <div className="flex gap-2">
             <button
@@ -98,7 +98,7 @@ export function ProductCarousel() {
           </div>
         </div>
 
-        {homeLoading && <p className="text-[#6B5D52]">Loading products...</p>}
+        {homeLoading && <p className="text-[#6B5D52]">Chargement des produits...</p>}
         {!homeLoading && trending.length === 0 && (
           <p className="text-[#6B5D52]">
             Aucun produit tendance pour le moment.

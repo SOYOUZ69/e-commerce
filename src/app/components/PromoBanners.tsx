@@ -14,18 +14,18 @@ type Promo = {
 const defaultPromos: Promo[] = [
   {
     id: 'default-1',
-    title: 'Jewelry Collection',
-    subtitle: 'Up to 40% Off',
-    ctaLabel: 'Shop Now',
+    title: 'Collection Bijoux',
+    subtitle: 'Jusqu’à -40 %',
+    ctaLabel: 'Découvrir',
     ctaUrl: '/products',
     imageUrl:
       'https://images.unsplash.com/photo-1758995115475-7b7d6eb060ba?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBqZXdlbHJ5JTIwZ29sZHxlbnwxfHx8fDE3NjY4NTIzNjB8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
   },
   {
     id: 'default-2',
-    title: 'Timepiece Collection',
-    subtitle: 'New Arrivals',
-    ctaLabel: 'Explore Now',
+    title: 'Collection Horlogerie',
+    subtitle: 'Nouveautés',
+    ctaLabel: 'Voir la sélection',
     ctaUrl: '/products',
     imageUrl:
       'https://images.unsplash.com/photo-1760532466974-f969f56dfcc8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxlbGVnYW50JTIwd2F0Y2glMjBwcmVtaXVtfGVufDF8fHx8MTc2NjkzOTk5NHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',

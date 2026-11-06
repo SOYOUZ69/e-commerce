@@ -49,7 +49,9 @@ export const AdminHomeProductEdit = () => {
   return (
     <div className="bg-white rounded-2xl p-6 shadow-sm">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl text-[#2C2520]">Modifier produit mis en avant</h2>
+        <h2 className="text-2xl text-[#2C2520]">
+          Modifier produit - Sélection exclusive / Tendances du moment
+        </h2>
         <Link to="/admin/home" className="text-[#B8936A]">Retour</Link>
       </div>
       {error && <p className="text-red-600 mb-3">{error}</p>}
@@ -78,8 +80,8 @@ export const AdminHomeProductEdit = () => {
           onChange={(event) => setItem({ ...item, type: event.target.value })}
           className="w-full border border-[#B8936A] px-3 py-2"
         >
-          <option value="featured">Featured</option>
-          <option value="trending">Trending</option>
+          <option value="featured">Sélection exclusive</option>
+          <option value="trending">Tendances du moment</option>
         </select>
         <input
           type="number"

@@ -1,5 +1,5 @@
 import { Heart, ShoppingCart } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import type { Product } from '../types';
 import { useCart } from '../store/cart';
 import { formatPrice } from '../utils/format';
@@ -10,10 +10,12 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const { addItem } = useCart();
+  const navigate = useNavigate();
   const { name, price, originalPrice, image, badge, rating = 5, slug } = product;
+  const hasOptions = (product.optionValues ?? []).length > 0;
   return (
     <Link
-      to={`/products/${slug}`}
+      to={`/product/${slug}`}
       className="group relative bg-white rounded-lg overflow-hidden block"
       aria-label={`Voir ${name}`}
     >
@@ -49,6 +51,10 @@ export function ProductCard({ product }: ProductCardProps) {
             onClick={(event) => {
               event.preventDefault();
               event.stopPropagation();
+              if (hasOptions) {
+                navigate(`/product/${slug}`);
+                return;
+              }
               addItem(product, 1);
             }}
             className="bg-white text-[#2C2520] p-3 rounded-full hover:bg-[#B8936A] hover:text-white transition-colors"

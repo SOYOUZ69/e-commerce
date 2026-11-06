@@ -64,7 +64,7 @@ export const AccountProfile = () => {
                 });
                 await refresh();
               } catch (err) {
-                setError(err instanceof Error ? err.message : 'Update failed');
+                setError(err instanceof Error ? err.message : 'Mise à jour impossible.');
               } finally {
                 setSaving(false);
               }

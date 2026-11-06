@@ -40,25 +40,30 @@ export const Cart = () => {
           </button>
         </div>
 
-        {loading && <p className="text-[#6B5D52]">Loading cart...</p>}
+        {loading && <p className="text-[#6B5D52]">Chargement du panier...</p>}
         {error && <p className="text-[#B8936A]">{error}</p>}
 
         <div className="space-y-6">
           {items.map((item) => (
-            <div key={item.product.id} className="flex flex-col md:flex-row gap-6 border-b pb-6">
+            <div key={item.key} className="flex flex-col md:flex-row gap-6 border-b pb-6">
               <img
                 src={item.product.image}
                 alt={item.product.name}
-                className="w-full md:w-40 h-40 object-cover rounded-lg"
+                className="w-40 h-40 flex-none object-cover rounded-lg"
               />
               <div className="flex-1">
                 <div className="flex items-center justify-between">
                   <div>
                     <h2 className="text-xl text-[#2C2520]">{item.product.name}</h2>
                     <p className="text-[#6B5D52]">{item.product.category}</p>
+                    {item.optionValue && (
+                      <p className="text-sm text-[#6B5D52]">
+                        {(item.optionLabel ?? 'Option')}: {item.optionValue}
+                      </p>
+                    )}
                   </div>
                   <button
-                    onClick={() => removeItem(item.product.id)}
+                    onClick={() => removeItem(item.key)}
                     className="text-sm text-[#B8936A] hover:text-[#2C2520]"
                   >
                     Supprimer
@@ -67,16 +72,16 @@ export const Cart = () => {
 
                 <div className="flex flex-wrap items-center gap-4 mt-4">
                   <div className="flex items-center gap-2">
-                    <label htmlFor={`qty-${item.product.id}`} className="text-[#2C2520]">
+                    <label htmlFor={`qty-${item.key}`} className="text-[#2C2520]">
                       Quantité
                     </label>
                     <input
-                      id={`qty-${item.product.id}`}
+                      id={`qty-${item.key}`}
                       type="number"
                       min={1}
                       value={item.quantity}
                       onChange={(event) =>
-                        updateQuantity(item.product.id, Math.max(1, Number(event.target.value) || 1))
+                        updateQuantity(item.key, Math.max(1, Number(event.target.value) || 1))
                       }
                       className="w-20 border border-[#B8936A] px-3 py-2"
                     />

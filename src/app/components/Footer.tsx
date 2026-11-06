@@ -17,7 +17,7 @@ type PaymentBadge = {
 };
 
 export function Footer() {
-  const [logoUrl, setLogoUrl] = useState('/images/reflet d’art (1).webp');
+  const [logoUrl, setLogoUrl] = useState('/images/logoespace.webp');
   const [socialLinks, setSocialLinks] = useState<SocialLink[]>([]);
   const [paymentBadges, setPaymentBadges] = useState<PaymentBadge[]>([]);
 
@@ -35,7 +35,7 @@ export function Footer() {
         setSocialLinks(socials);
         setPaymentBadges(badges);
       } catch {
-        setLogoUrl('/images/reflet d’art (1).webp');
+        setLogoUrl('/images/logoespace.webp');
       }
     };
     load();
@@ -55,10 +55,10 @@ export function Footer() {
           {/* Company Info */}
           <div className="lg:col-span-2">
             <Link to="/">
-              <img src={logoUrl} alt="Reflet d'art" className="h-16 w-16 mb-4" />
+              <img src={logoUrl} alt="Espace Mariage" className="h-16 w-16 mb-4" />
             </Link>
             <p className="text-white/70 mb-6 max-w-sm">
-              Discover timeless elegance and luxury with our curated selection of premium products designed to elevate your lifestyle.
+              Découvrez l’élégance intemporelle d’Espace Mariage, une sélection raffinée de pièces pensées pour sublimer vos instants précieux.
             </p>
             <div className="flex gap-4">
               {socialLinks.length === 0 && (
@@ -95,11 +95,11 @@ export function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-lg mb-4">Quick Links</h3>
+            <h3 className="text-lg mb-4">Accès rapide</h3>
             <ul className="space-y-3">
               <li>
                 <Link to="/about" className="text-white/70 hover:text-[#B8936A] transition-colors">
-                  About Us
+                  Notre Maison
                 </Link>
               </li>
               <li>
@@ -109,7 +109,7 @@ export function Footer() {
               </li>
               <li>
                 <Link to="/products" className="text-white/70 hover:text-[#B8936A] transition-colors">
-                  Shop
+                  Boutique
                 </Link>
               </li>
             </ul>
@@ -117,26 +117,26 @@ export function Footer() {
 
           {/* Customer Service */}
           <div>
-            <h3 className="text-lg mb-4">Customer Service</h3>
+            <h3 className="text-lg mb-4">Service client</h3>
             <ul className="space-y-3">
               <li>
                 <a href="#" className="text-white/70 hover:text-[#B8936A] transition-colors">
-                  Shipping Info
+                  Livraison
                 </a>
               </li>
               <li>
                 <a href="#" className="text-white/70 hover:text-[#B8936A] transition-colors">
-                  Returns
+                  Retours
                 </a>
               </li>
               <li>
                 <a href="#" className="text-white/70 hover:text-[#B8936A] transition-colors">
-                  Size Guide
+                  Guide des tailles
                 </a>
               </li>
               <li>
                 <a href="#" className="text-white/70 hover:text-[#B8936A] transition-colors">
-                  Track Order
+                  Suivi de commande
                 </a>
               </li>
             </ul>
@@ -144,26 +144,26 @@ export function Footer() {
 
           {/* Legal */}
           <div>
-            <h3 className="text-lg mb-4">Legal</h3>
+            <h3 className="text-lg mb-4">Informations légales</h3>
             <ul className="space-y-3">
               <li>
                 <a href="#" className="text-white/70 hover:text-[#B8936A] transition-colors">
-                  Privacy Policy
+                  Politique de confidentialité
                 </a>
               </li>
               <li>
                 <a href="#" className="text-white/70 hover:text-[#B8936A] transition-colors">
-                  Terms of Service
+                  Conditions générales
                 </a>
               </li>
               <li>
                 <a href="#" className="text-white/70 hover:text-[#B8936A] transition-colors">
-                  Cookie Policy
+                  Politique des cookies
                 </a>
               </li>
               <li>
                 <a href="#" className="text-white/70 hover:text-[#B8936A] transition-colors">
-                  Accessibility
+                  Accessibilité
                 </a>
               </li>
             </ul>
@@ -174,7 +174,7 @@ export function Footer() {
         <div className="pt-8 border-t border-white/10">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-white/60 text-sm">
-              © 2025 Reflet d'art. All rights reserved.
+              © 2025 Espace Mariage. Tous droits réservés.
             </p>
             <div className="flex gap-4">
               {paymentBadges.length === 0 && (

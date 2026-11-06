@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { adminGet, adminPatch } from '../api/admin';
+import { adminDelete, adminGet, adminPatch } from '../api/admin';
 import { formatPrice } from '../utils/format';
 import { formatOrderStatus, orderStatusClass } from '../utils/orderStatus';
 
@@ -8,6 +8,8 @@ type OrderItem = {
   name: string;
   price: number;
   quantity: number;
+  optionLabel?: string | null;
+  optionValue?: string | null;
   product?: {
     image?: string | null;
   };
@@ -31,6 +33,7 @@ export const AdminOrders = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const load = async () => {
     setLoading(true);
@@ -97,6 +100,27 @@ export const AdminOrders = () => {
                     </option>
                   ))}
                 </select>
+                <button
+                  type="button"
+                  className="border border-red-500 text-red-600 px-3 py-2 rounded-md text-sm hover:bg-red-50 disabled:opacity-60"
+                  disabled={deletingId === order.id}
+                  onClick={async () => {
+                    const ok = window.confirm('Supprimer cette commande ? Cette action est définitive.');
+                    if (!ok) return;
+                    setDeletingId(order.id);
+                    setError(null);
+                    try {
+                      await adminDelete(`/api/admin/orders/${order.id}`);
+                      setOrders((prev) => prev.filter((item) => item.id !== order.id));
+                    } catch (err) {
+                      setError(err instanceof Error ? err.message : 'Delete failed');
+                    } finally {
+                      setDeletingId(null);
+                    }
+                  }}
+                >
+                  {deletingId === order.id ? 'Suppression...' : 'Supprimer'}
+                </button>
               </div>
             </div>
 
@@ -128,6 +152,11 @@ export const AdminOrders = () => {
                     )}
                     <div className="text-[#2C2520]">
                       {item.name} ({item.quantity})
+                      {item.optionValue && (
+                        <div className="text-xs text-[#6B5D52]">
+                          {(item.optionLabel ?? 'Option')}: {item.optionValue}
+                        </div>
+                      )}
                     </div>
                   </div>
                   <div className="text-[#B8936A]">

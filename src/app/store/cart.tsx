@@ -1,18 +1,27 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { trackAddToCart } from '../lib/metaPixel';
 import type { Product } from '../types';
 import { useCatalog } from './catalog';
 
 type RawCartItem = {
+  key: string;
   productId: string;
   quantity: number;
+  optionLabel?: string | null;
+  optionValue?: string | null;
 };
 
 type CartItem = {
+  key: string;
   product: Product;
   quantity: number;
+  optionLabel?: string | null;
+  optionValue?: string | null;
 };
 
 const STORAGE_KEY = 'reflet-cart';
+const buildKey = (productId: string, optionValue?: string | null) =>
+  `${productId}::${optionValue ?? ''}`;
 
 const CartContext = createContext<{
   items: CartItem[];
@@ -20,9 +29,13 @@ const CartContext = createContext<{
   subtotal: number;
   loading: boolean;
   error: string | null;
-  addItem: (product: Product, quantity?: number) => void;
-  removeItem: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
+  addItem: (
+    product: Product,
+    quantity?: number,
+    options?: { optionLabel?: string | null; optionValue?: string | null }
+  ) => void;
+  removeItem: (key: string) => void;
+  updateQuantity: (key: string, quantity: number) => void;
   clear: () => void;
 } | null>(null);
 
@@ -36,7 +49,13 @@ const readCart = (): RawCartItem[] => {
   }
   try {
     const parsed = JSON.parse(raw) as RawCartItem[];
-    return Array.isArray(parsed) ? parsed : [];
+    if (!Array.isArray(parsed)) {
+      return [];
+    }
+    return parsed.map((item) => ({
+      ...item,
+      key: item.key || buildKey(item.productId, item.optionValue),
+    }));
   } catch {
     return [];
   }
@@ -71,39 +90,61 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
           if (!product) {
             return null;
           }
-          return { product, quantity: item.quantity } as CartItem;
+          return {
+            key: item.key,
+            product,
+            quantity: item.quantity,
+            optionLabel: item.optionLabel ?? null,
+            optionValue: item.optionValue ?? null,
+          } as CartItem;
         })
         .filter(Boolean) as CartItem[],
     [rawItems, products]
   );
 
-  const addItem = (product: Product, quantity = 1) => {
+  const addItem = (
+    product: Product,
+    quantity = 1,
+    options?: { optionLabel?: string | null; optionValue?: string | null }
+  ) => {
+    const safeQuantity = Math.max(1, Number(quantity) || 1);
+    const key = buildKey(product.id, options?.optionValue);
     setRawItems((prev) => {
-      const existing = prev.find((item) => item.productId === product.id);
+      const existing = prev.find((item) => item.key === key);
       if (existing) {
         return prev.map((item) =>
-          item.productId === product.id
-            ? { ...item, quantity: item.quantity + quantity }
+          item.key === key
+            ? { ...item, quantity: item.quantity + safeQuantity }
             : item
         );
       }
-      return [...prev, { productId: product.id, quantity }];
+      return [
+        ...prev,
+        {
+          key,
+          productId: product.id,
+          quantity: safeQuantity,
+          optionLabel: options?.optionLabel ?? null,
+          optionValue: options?.optionValue ?? null,
+        },
+      ];
     });
+    trackAddToCart(product, safeQuantity);
   };
 
-  const updateQuantity = (productId: string, quantity: number) => {
+  const updateQuantity = (key: string, quantity: number) => {
     setRawItems((prev) => {
       if (quantity <= 0) {
-        return prev.filter((item) => item.productId !== productId);
+        return prev.filter((item) => item.key !== key);
       }
       return prev.map((item) =>
-        item.productId === productId ? { ...item, quantity } : item
+        item.key === key ? { ...item, quantity } : item
       );
     });
   };
 
-  const removeItem = (productId: string) => {
-    setRawItems((prev) => prev.filter((item) => item.productId !== productId));
+  const removeItem = (key: string) => {
+    setRawItems((prev) => prev.filter((item) => item.key !== key));
   };
 
   const clear = () => {

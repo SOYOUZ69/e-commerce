@@ -37,8 +37,8 @@ model Product {
   slug          String   @unique
   name          String
   sku           String?
-  price         Int
-  originalPrice Int?
+  price         Decimal  @db.Decimal(10, 3)
+  originalPrice Decimal? @db.Decimal(10, 3)
   stock         Int      @default(0)
   status        String   @default("active")
   image         String
@@ -47,6 +47,8 @@ model Product {
   shortDescription String?
   description   String
   details       Json
+  optionLabel   String?
+  optionValues  Json?
   featured      Boolean  @default(false)
   trending      Boolean  @default(false)
   categoryId    String
@@ -93,7 +95,7 @@ model CartItem {
 model Order {
   id              String      @id @default(cuid())
   status          String      @default("pending")
-  total           Int
+  total           Decimal     @db.Decimal(10, 3)
   customerId      String?
   customerName    String
   customerEmail   String
@@ -110,8 +112,10 @@ model OrderItem {
   orderId   String
   productId String
   name      String
-  price     Int
+  price     Decimal @db.Decimal(10, 3)
   quantity  Int
+  optionLabel String?
+  optionValue String?
   order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product   Product  @relation(fields: [productId], references: [id])
 }

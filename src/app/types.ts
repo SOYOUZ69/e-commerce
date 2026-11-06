@@ -8,9 +8,21 @@ export type Product = {
   id: string;
   slug: string;
   name: string;
+  sku?: string | null;
   price: number;
   originalPrice?: number | null;
+  stock?: number;
+  status?: string;
   image: string;
+  images?: {
+    id?: string;
+    url: string;
+    alt?: string | null;
+    isPrimary?: boolean;
+    position?: number;
+  }[];
+  optionLabel?: string | null;
+  optionValues?: string[];
   badge?: string | null;
   rating?: number | null;
   category: string;

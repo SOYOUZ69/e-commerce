@@ -1,12 +1,11 @@
 services:
   db:
     image: postgres:16-alpine
+    restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: reflet
-    ports:
-      - "5432:5432"
     volumes:
       - reflet_db:/var/lib/postgresql/data
     healthcheck:
@@ -14,6 +13,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    networks:
+      - app_net
 
   api:
     build:
@@ -22,28 +23,51 @@ services:
     environment:
       DATABASE_URL: postgresql://postgres:postgres@db:5432/reflet?schema=public
       JWT_SECRET: change-me
-      ADMIN_EMAIL: admin@reflet.com
-      ADMIN_PASSWORD: admin123
+      ADMIN_EMAIL: admin.secure@espacemariages.com
+      ADMIN_PASSWORD: "S4m!2026#RfL9"
+      INVENTORY_CLIENT_ID: inventory-client
+      INVENTORY_CLIENT_SECRET: Espacemariage2026#
+      META_FEED_SITE_URL: ${META_FEED_SITE_URL:-https://espacemariages.com}
+      META_FEED_CURRENCY: ${META_FEED_CURRENCY:-TND}
+      META_FEED_BRAND: ${META_FEED_BRAND:-Espace Mariage}
       SEED_ON_START: "false"
-    ports:
-      - "3001:3001"
+    expose:
+      - "3001"
     volumes:
       - ./server/uploads:/app/uploads
     depends_on:
       db:
         condition: service_healthy
     restart: unless-stopped
+    networks:
+      app_net:
+        aliases:
+          - espacemariages_api
 
   web:
+    restart: unless-stopped
     build:
       context: .
       dockerfile: Dockerfile
       args:
-        VITE_API_URL: http://localhost:3001
-    ports:
-      - "8080:80"
+        VITE_API_URL: ""
+        VITE_SITE_URL: ${VITE_SITE_URL:-https://espacemariages.com}
+        VITE_META_PIXEL_ID: ${VITE_META_PIXEL_ID:-901934765782948}
+        VITE_META_CURRENCY: ${VITE_META_CURRENCY:-TND}
+        VITE_META_BRAND: ${VITE_META_BRAND:-Espace Mariage}
+    expose:
+      - "80"
     depends_on:
       - api
+    networks:
+      app_net:
+        aliases:
+          - espacemariages_web
 
 volumes:
   reflet_db:
+
+networks:
+  app_net:
+    external: true
+    name: mbm-machines_app_net

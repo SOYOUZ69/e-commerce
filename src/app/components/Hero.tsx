@@ -11,33 +11,43 @@ type HeroData = {
   isActive?: boolean;
 };
 
-const defaultHero: HeroData = {
-  title: 'Discover Luxury & Elegance',
-  subtitle:
-    '',
-  ctaLabel: 'Shop Now',
-  ctaUrl: '/products',
-  imageUrl:
-    'https://images.unsplash.com/photo-1622080157653-830e675f14c3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHxwcmVtaXVtJTIwZmFzaGlvbiUyMG1vZGVsfGVufDF8fHx8MTc2NjkzOTk5Nnww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
-  badgeText: 'New Collection 2025',
-};
-
 export function Hero() {
-  const [hero, setHero] = useState<HeroData>(defaultHero);
+  const [hero, setHero] = useState<HeroData | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const load = async () => {
       try {
         const data = await fetchJson('/api/home/hero');
-        if (data && data.isActive !== false) {
-          setHero({ ...defaultHero, ...data });
+        const isActive = data?.isActive !== false;
+        const hasContent = Boolean(
+          data?.title ||
+            data?.subtitle ||
+            data?.ctaLabel ||
+            data?.ctaUrl ||
+            data?.imageUrl ||
+            data?.badgeText
+        );
+        if (data && isActive && hasContent) {
+          setHero(data);
+        } else {
+          setHero(null);
         }
       } catch {
-        setHero(defaultHero);
+        setHero(null);
+      } finally {
+        setLoading(false);
       }
     };
     load();
   }, []);
+
+  if (loading || !hero) {
+    return null;
+  }
+
+  const imageSrc = hero.imageUrl ?? null;
+  const showCta = Boolean(hero.ctaLabel && hero.ctaUrl);
 
   return (
     <section className="relative bg-[#FAF8F3] overflow-hidden">
@@ -45,35 +55,45 @@ export function Hero() {
         <div className="grid lg:grid-cols-2 gap-12 items-center py-20 lg:py-32">
           {/* Left Content */}
           <div className="space-y-6">
-            <div className="inline-block">
-              <span className="text-[#B8936A] tracking-widest uppercase text-sm">
-                {hero.badgeText ?? defaultHero.badgeText}
-              </span>
-            </div>
-            <h1 className="text-5xl lg:text-6xl xl:text-7xl text-[#2C2520]">
-              {hero.title ?? defaultHero.title}
-            </h1>
-            <p className="text-lg text-[#6B5D52] max-w-md">
-              {hero.subtitle ?? defaultHero.subtitle}
-            </p>
-            <div className="flex flex-wrap gap-4 pt-4">
-              <a
-                href={hero.ctaUrl ?? defaultHero.ctaUrl}
-                className="bg-[#B8936A] text-white px-8 py-3 hover:bg-[#A67C52] transition-colors"
-              >
-                {hero.ctaLabel ?? defaultHero.ctaLabel}
-              </a>
-            </div>
+            {hero.badgeText && (
+              <div className="inline-block">
+                <span className="text-[#B8936A] tracking-widest uppercase text-sm">
+                  {hero.badgeText}
+                </span>
+              </div>
+            )}
+            {hero.title && (
+              <h1 className="text-5xl lg:text-6xl xl:text-7xl text-[#2C2520]">
+                {hero.title}
+              </h1>
+            )}
+            {hero.subtitle && (
+              <p className="text-lg text-[#6B5D52] max-w-md">
+                {hero.subtitle}
+              </p>
+            )}
+            {showCta && (
+              <div className="flex flex-wrap gap-4 pt-4">
+                <a
+                  href={hero.ctaUrl ?? '#'}
+                  className="bg-[#B8936A] text-white px-8 py-3 hover:bg-[#A67C52] transition-colors"
+                >
+                  {hero.ctaLabel}
+                </a>
+              </div>
+            )}
           </div>
 
           {/* Right Image */}
           <div className="relative">
-            <div className="aspect-[4/5] rounded-lg overflow-hidden">
-              <img
-                src={hero.imageUrl ?? defaultHero.imageUrl}
-                alt="Hero"
-                className="w-full h-full object-cover"
-              />
+            <div className="aspect-[4/5] rounded-lg overflow-hidden bg-[#EFE7DA]">
+              {imageSrc && (
+                <img
+                  src={imageSrc}
+                  alt="Visuel principal"
+                  className="w-full h-full object-cover"
+                />
+              )}
             </div>
             {/* Decorative Element */}
             <div className="absolute -top-6 -right-6 w-24 h-24 bg-[#B8936A] rounded-full opacity-20 -z-10"></div>

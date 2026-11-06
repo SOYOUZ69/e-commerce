@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes, useParams } from 'react-router-dom';
 import { StoreLayout } from './layouts/StoreLayout';
 import { Home } from './pages/Home';
 import { Products } from './pages/Products';
@@ -34,10 +34,22 @@ import { AdminSiteSettingsEdit } from './admin/AdminSiteSettingsEdit';
 import { AdminSocialEdit } from './admin/AdminSocialEdit';
 import { AdminBadgeEdit } from './admin/AdminBadgeEdit';
 import { AdminOrders } from './admin/AdminOrders';
+import { ScrollToTop } from './components/ScrollToTop';
+import { MetaPixelTracker } from './components/MetaPixelTracker';
+
+const LegacyProductRedirect = () => {
+  const { slug } = useParams();
+  if (!slug) {
+    return <Navigate to="/products" replace />;
+  }
+  return <Navigate to={`/product/${encodeURIComponent(slug)}`} replace />;
+};
 
 export default function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
+      <MetaPixelTracker />
       <CatalogProvider>
         <CartProvider>
           <AuthProvider>
@@ -63,7 +75,8 @@ export default function App() {
               <Route element={<StoreLayout />}>
                 <Route index element={<Home />} />
                 <Route path="products" element={<Products />} />
-                <Route path="products/:slug" element={<ProductDetail />} />
+                <Route path="product/:slug" element={<ProductDetail />} />
+                <Route path="products/:slug" element={<LegacyProductRedirect />} />
                 <Route path="about" element={<About />} />
                 <Route path="contact" element={<Contact />} />
                 <Route path="cart" element={<Cart />} />

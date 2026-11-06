@@ -11,7 +11,7 @@ export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [query, setQuery] = useState('');
-  const [logoUrl, setLogoUrl] = useState('/images/reflet d’art (1).webp');
+  const [logoUrl, setLogoUrl] = useState('/images/logoespace.webp');
   const [announcement, setAnnouncement] = useState<string | null>(null);
   const { cartCount } = useCart();
   const { customer } = useAuth();
@@ -31,7 +31,7 @@ export function Header() {
           setAnnouncement(settings.announcementText);
         }
       } catch {
-        setLogoUrl('/images/reflet d’art (1).webp');
+        setLogoUrl('/images/logoespace.webp');
       }
     };
     load();
@@ -76,17 +76,17 @@ export function Header() {
             {/* Logo */}
             <div className="flex-shrink-0">
               <Link to="/">
-                <img src={logoUrl} alt="Reflet d'art" className="h-20 w-20" />
+                <img src={logoUrl} alt="Espace Mariage" className="h-20 w-20" />
               </Link>
             </div>
 
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center space-x-8">
               <NavLink to="/products" className={navLinkClass}>
-                Shop
+                Boutique
               </NavLink>
               <NavLink to="/about" className={navLinkClass}>
-                About
+                Notre Maison
               </NavLink>
               <NavLink to="/contact" className={navLinkClass}>
                 Contact
@@ -142,14 +142,14 @@ export function Header() {
                   onClick={() => setIsMenuOpen(false)}
                   className="text-[#2C2520] hover:text-[#B8936A] transition-colors"
                 >
-                  Shop
+                  Boutique
                 </Link>
                 <Link
                   to="/about"
                   onClick={() => setIsMenuOpen(false)}
                   className="text-[#2C2520] hover:text-[#B8936A] transition-colors"
                 >
-                  About
+                  Notre Maison
                 </Link>
                 <Link
                   to="/contact"
@@ -197,12 +197,12 @@ export function Header() {
             {normalizedQuery.length >= 2 && (
               <div className="mt-4 space-y-2">
                 {searchResults.length === 0 && (
-                  <p className="text-sm text-[#6B5D52]">Aucun resultat.</p>
+                  <p className="text-sm text-[#6B5D52]">Aucun résultat.</p>
                 )}
                 {searchResults.slice(0, 8).map((product) => (
                   <Link
                     key={product.id}
-                    to={`/products/${product.slug}`}
+                    to={`/product/${product.slug}`}
                     onClick={() => {
                       setIsSearchOpen(false);
                       setQuery('');

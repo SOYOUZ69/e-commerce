@@ -31,7 +31,7 @@ export const AccountLogin = () => {
                 await login(email, password);
                 navigate(returnTo);
               } catch (err) {
-                setError(err instanceof Error ? err.message : 'Login failed');
+                setError(err instanceof Error ? err.message : 'Connexion impossible.');
               } finally {
                 setLoading(false);
               }
@@ -42,7 +42,7 @@ export const AccountLogin = () => {
               type="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              placeholder="Email"
+              placeholder="Adresse e-mail"
               className="w-full border border-[#B8936A] px-3 py-2"
               required
             />
